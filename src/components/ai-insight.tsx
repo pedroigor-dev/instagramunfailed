@@ -1,8 +1,6 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import type { AnalysisResult } from "@/lib/types"
 
 type AiInsightProps = Pick<
@@ -62,49 +60,51 @@ export function AiInsight({
   }, [followersCount, followingCount, nonFollowersCount, nonFollowers])
 
   return (
-    <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🤖</span>
+    <div className="rounded-2xl border border-[#e1306c]/15 bg-gradient-to-br from-[#fdf4f7] to-[#f9f0ff] p-5">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm flex-shrink-0 shadow-sm"
+            style={{ background: "linear-gradient(135deg, #833ab4, #e1306c, #f77737)" }}
+          >
+            ✨
+          </div>
           <div>
-            <p className="font-semibold text-white text-sm">Análise com IA</p>
-            <p className="text-xs text-white/50">Powered by Mistral 7B via HuggingFace</p>
+            <p className="font-semibold text-gray-800 text-sm">Análise com IA</p>
+            <p className="text-[11px] text-gray-400">Mistral 7B · HuggingFace</p>
           </div>
         </div>
-        <Button
-          size="sm"
+        <button
           onClick={fetchInsight}
           disabled={loading}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0"
+          className="text-[12px] font-semibold px-4 py-2 rounded-xl text-white shadow-sm transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 active:scale-95"
+          style={{ background: "linear-gradient(135deg, #833ab4, #e1306c, #f77737)" }}
         >
           {loading ? (
             <span className="flex items-center gap-2">
               <span className="inline-block w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />
               Gerando...
             </span>
-          ) : requested ? (
-            "Regenerar"
-          ) : (
-            "Gerar insight"
-          )}
-        </Button>
+          ) : requested ? "Regenerar" : "Gerar insight"}
+        </button>
       </div>
 
       {error && (
-        <Alert className="border-red-500/30 bg-red-500/10">
-          <AlertDescription className="text-red-400 text-sm">{error}</AlertDescription>
-        </Alert>
+        <div className="mt-4 rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+          <p className="text-red-500 text-xs">{error}</p>
+        </div>
       )}
 
       {insight && (
-        <p className="text-white/80 text-sm leading-relaxed italic border-l-2 border-purple-500/50 pl-4">
+        <p className="mt-4 text-gray-700 text-[13px] leading-relaxed italic border-l-2 pl-4" style={{ borderColor: "#e1306c" }}>
           {insight}
         </p>
       )}
 
       {!insight && !error && !loading && (
-        <p className="text-white/30 text-sm">
-          Clique em &quot;Gerar insight&quot; para receber uma análise personalizada dos seus dados.
+        <p className="mt-4 text-gray-400 text-[12px]">
+          Clique em &quot;Gerar insight&quot; para receber uma análise personalizada
+          dos seus dados pelo Mistral 7B.
         </p>
       )}
     </div>

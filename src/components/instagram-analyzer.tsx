@@ -1,9 +1,8 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Separator } from "@/components/ui/separator"
 import { UploadZone } from "@/components/upload-zone"
 import { StatsCards } from "@/components/stats-cards"
 import { ResultsTable } from "@/components/results-table"
@@ -64,61 +63,65 @@ export function InstagramAnalyzer() {
     setError(null)
   }
 
+  const canAnalyze = !!followersFile && !!followingFile && !loading
+
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <UploadZone
-            label="followers_1.json"
-            hint="Arraste ou clique para selecionar"
-            file={followersFile}
-            onFile={setFollowersFile}
-          />
-          <UploadZone
-            label="following.json"
-            hint="Arraste ou clique para selecionar"
-            file={followingFile}
-            onFile={setFollowingFile}
-          />
-        </div>
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <UploadZone
+          label="followers_1.json"
+          hint="Arraste ou clique para selecionar"
+          file={followersFile}
+          onFile={setFollowersFile}
+        />
+        <UploadZone
+          label="following.json"
+          hint="Arraste ou clique para selecionar"
+          file={followingFile}
+          onFile={setFollowingFile}
+        />
+      </div>
 
-        {error && (
-          <Alert className="border-red-500/30 bg-red-500/10">
-            <AlertDescription className="text-red-400">{error}</AlertDescription>
-          </Alert>
-        )}
+      {error && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertDescription className="text-red-500 text-sm">{error}</AlertDescription>
+        </Alert>
+      )}
 
-        <div className="flex gap-3">
-          <Button
-            onClick={handleAnalyze}
-            disabled={!followersFile || !followingFile || loading}
-            className="flex-1 sm:flex-none bg-gradient-to-r from-pink-600 via-purple-600 to-orange-500 hover:from-pink-500 hover:via-purple-500 hover:to-orange-400 text-white border-0 font-semibold h-11 px-8 disabled:opacity-40"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="inline-block w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                Analisando...
-              </span>
-            ) : (
-              "Analisar dados"
-            )}
-          </Button>
-
-          {result && (
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="border-white/20 text-white/60 hover:text-white hover:bg-white/10"
-            >
-              Reiniciar
-            </Button>
+      <div className="flex gap-2.5">
+        <button
+          onClick={handleAnalyze}
+          disabled={!canAnalyze}
+          className="flex-1 sm:flex-none h-11 px-8 rounded-2xl text-white text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:scale-100"
+          style={{
+            background: canAnalyze
+              ? "linear-gradient(135deg, #833ab4 0%, #c13584 35%, #e1306c 60%, #f77737 90%)"
+              : "linear-gradient(135deg, #c4b5d4 0%, #d4a0b5 50%, #d4a0a0 100%)",
+          }}
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="inline-block w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              Analisando...
+            </span>
+          ) : (
+            "Analisar dados"
           )}
-        </div>
+        </button>
+
+        {result && (
+          <button
+            onClick={handleReset}
+            className="h-11 px-5 rounded-2xl text-sm font-medium text-gray-500 border border-gray-200 hover:border-gray-300 hover:text-gray-700 transition-all duration-150"
+          >
+            Reiniciar
+          </button>
+        )}
       </div>
 
       {result && (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Separator className="bg-white/10" />
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">
+          <Separator className="bg-gray-100" />
 
           <StatsCards
             followersCount={result.followersCount}
@@ -134,10 +137,12 @@ export function InstagramAnalyzer() {
           />
 
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-white">Quem não te segue de volta</h2>
-              <span className="text-sm text-white/40 tabular-nums">
-                ({result.nonFollowersCount})
+            <div className="flex items-center gap-2">
+              <h2 className="text-[15px] font-semibold text-gray-800">
+                Quem não te segue de volta
+              </h2>
+              <span className="text-[12px] font-medium text-gray-400 bg-gray-100 rounded-full px-2.5 py-0.5 tabular-nums">
+                {result.nonFollowersCount}
               </span>
             </div>
             <ResultsTable nonFollowers={result.nonFollowers} />
