@@ -71,7 +71,7 @@ export function AiInsight({
           </div>
           <div>
             <p className="font-semibold text-gray-800 text-sm">Análise com IA</p>
-            <p className="text-[11px] text-gray-400">Mistral 7B · HuggingFace</p>
+            <p className="text-[11px] text-gray-400">Llama 3.1 8B · HuggingFace</p>
           </div>
         </div>
         <button
@@ -104,7 +104,7 @@ export function AiInsight({
       {!insight && !error && !loading && (
         <p className="mt-4 text-gray-400 text-[12px]">
           Clique em &quot;Gerar insight&quot; para receber uma análise personalizada
-          dos seus dados pelo Mistral 7B.
+          dos seus dados pelo Llama 3.1 8B.
         </p>
       )}
     </div>

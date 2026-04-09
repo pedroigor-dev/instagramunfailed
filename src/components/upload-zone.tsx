@@ -59,9 +59,11 @@ export function UploadZone({ label, hint, files, onFiles, accept = ".json", mult
   const hasFiles = files.length > 0
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => inputRef.current?.click()}
+      onKeyDown={(e) => e.key === "Enter" || e.key === " " ? inputRef.current?.click() : undefined}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -126,6 +128,7 @@ export function UploadZone({ label, hint, files, onFiles, accept = ".json", mult
       ) : (
         <p className="text-[11px] mt-1 text-gray-400">{hint}</p>
 )}
-    </button>
+    </div>
   )
 }
+

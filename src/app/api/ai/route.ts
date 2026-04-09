@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
 
-const HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"
-const HF_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}/v1/chat/completions`
+const HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras"
+const HF_URL = "https://router.huggingface.co/v1/chat/completions"
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.HUGGINGFACE_API_KEY
@@ -21,17 +21,16 @@ export async function POST(request: NextRequest) {
 
   const sampleList = (sampleUsernames as string[]).slice(0, 8).join(", ")
 
-  const prompt = `Você é um analista de redes sociais direto e bem-humorado. 
-Analise estes dados do Instagram e escreva um insight curto e engajador (máximo 3 frases em português do Brasil).
-Seja direto, levemente irônico e termine com uma recomendação prática.
+  const prompt = `Você é um analista de redes sociais objetivo e direto. Analise os dados abaixo de um perfil do Instagram e escreva um diagnóstico em 2-3 frases em português do Brasil.
+Regras: fale na terceira pessoa sobre o dono do perfil ("esse perfil", "você segue", "vale considerar"), seja honesto e prático, sem drama. Não use primeira pessoa, não invente histórias.
 
-Dados:
+Dados do perfil:
 - Seguidores: ${followersCount}
-- Seguindo: ${followingCount}  
+- Seguindo: ${followingCount}
 - Não seguem de volta: ${nonFollowersCount} (${percentage}% de quem você segue)
-- Alguns que não te seguem de volta: ${sampleList}
+- Exemplos de quem não segue de volta: ${sampleList}
 
-Insight:`
+Diagnóstico:`
 
   const hfResponse = await fetch(HF_URL, {
     method: "POST",
