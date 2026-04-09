@@ -7,12 +7,12 @@ import { UploadZone } from "@/components/upload-zone"
 import { StatsCards } from "@/components/stats-cards"
 import { ResultsTable } from "@/components/results-table"
 import { AiInsight } from "@/components/ai-insight"
-import { parseFollowers, parseFollowing, analyze } from "@/lib/instagram"
+import { parseFollowersMerged, parseFollowing, analyze } from "@/lib/instagram"
 import type { AnalysisResult } from "@/lib/types"
 
 export function InstagramAnalyzer() {
-  const [followersFile, setFollowersFile] = useState<File | null>(null)
-  const [followingFile, setFollowingFile] = useState<File | null>(null)
+  const [followersFiles, setFollowersFiles] = useState<File[]>([])
+  const [followingFiles, setFollowingFiles] = useState<File[]>([])
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +24,7 @@ export function InstagramAnalyzer() {
         try {
           resolve(JSON.parse(e.target?.result as string))
         } catch {
-          reject(new Error(`Arquivo "${file.name}" não é um JSON válido.`))
+          reject(new Error(`"${file.name}" não é um JSON válido.`))
         }
       }
       reader.onerror = () => reject(new Error(`Erro ao ler "${file.name}".`))
@@ -32,38 +32,40 @@ export function InstagramAnalyzer() {
     })
 
   const handleAnalyze = useCallback(async () => {
-    if (!followersFile || !followingFile) return
+    if (!followersFiles.length || !followingFiles.length) return
 
     setLoading(true)
     setError(null)
     setResult(null)
 
     try {
-      const [followersData, followingData] = await Promise.all([
-        readJson(followersFile),
-        readJson(followingFile),
+      const [followersDataArray, followingData] = await Promise.all([
+        Promise.all(followersFiles.map(readJson)),
+        readJson(followingFiles[0]),
       ])
 
-      const followers = parseFollowers(followersData)
+      const followers = parseFollowersMerged(followersDataArray)
       const following = parseFollowing(followingData)
-      const analysis = analyze(followers, following)
 
-      setResult(analysis)
+      if (followers.size === 0) throw new Error("Nenhum seguidor encontrado nos arquivos enviados. Verifique se são os arquivos corretos.")
+      if (following.size === 0) throw new Error("Nenhum dado de 'seguindo' encontrado. Verifique se o arquivo following.json está correto.")
+
+      setResult(analyze(followers, following))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao processar os arquivos.")
     } finally {
       setLoading(false)
     }
-  }, [followersFile, followingFile])
+  }, [followersFiles, followingFiles])
 
   const handleReset = () => {
-    setFollowersFile(null)
-    setFollowingFile(null)
+    setFollowersFiles([])
+    setFollowingFiles([])
     setResult(null)
     setError(null)
   }
 
-  const canAnalyze = !!followersFile && !!followingFile && !loading
+  const canAnalyze = followersFiles.length > 0 && followingFiles.length > 0 && !loading
 
   return (
     <div className="space-y-5">
@@ -71,16 +73,23 @@ export function InstagramAnalyzer() {
         <UploadZone
           label="followers_1.json"
           hint="Arraste ou clique para selecionar"
-          file={followersFile}
-          onFile={setFollowersFile}
+          files={followersFiles}
+          onFiles={setFollowersFiles}
+          multiple
         />
         <UploadZone
           label="following.json"
           hint="Arraste ou clique para selecionar"
-          file={followingFile}
-          onFile={setFollowingFile}
+          files={followingFiles}
+          onFiles={setFollowingFiles}
         />
       </div>
+
+      {followersFiles.length > 0 && (
+        <p className="text-[11px] text-gray-400 -mt-2 px-1">
+          💡 Instagram divide seguidores em vários arquivos (followers_1, followers_2…). Adicione todos para resultado completo.
+        </p>
+      )}
 
       {error && (
         <Alert className="border-red-200 bg-red-50">
@@ -118,6 +127,14 @@ export function InstagramAnalyzer() {
           </button>
         )}
       </div>
+
+      {result && result.followersCount < result.followingCount * 0.85 && (
+        <Alert className="border-amber-200 bg-amber-50">
+          <AlertDescription className="text-amber-700 text-sm leading-relaxed">
+            ⚠️ <strong>Atenção: o export do Instagram está incompleto.</strong> O arquivo exportado contém apenas {result.followersCount} seguidores, mas você está seguindo {result.followingCount} contas. Isso é uma limitação conhecida do Instagram — para contas com muitos seguidores, o export é truncado automaticamente e não há como contornar. Os resultados abaixo refletem apenas os dados disponíveis no arquivo.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {result && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">

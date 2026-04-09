@@ -1,9 +1,13 @@
 export type InstagramEntry = {
-  string_list_data: {
-    value: string
+  string_list_data?: {
+    value?: string
     href?: string
-    timestamp: number
+    timestamp?: number
   }[]
+  title?: string
+  value?: string
+  href?: string
+  timestamp?: number
 }
 
 export type NonFollower = {
