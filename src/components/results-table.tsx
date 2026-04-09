@@ -24,17 +24,23 @@ function formatDate(timestamp: number) {
   })
 }
 
+type SortMode = "alpha" | "oldest" | "newest"
+
+const TWO_YEARS_AGO = Date.now() / 1000 - 2 * 365 * 24 * 3600
+
 export function ResultsTable({ nonFollowers }: ResultsTableProps) {
   const [search, setSearch] = useState("")
   const [copied, setCopied] = useState(false)
+  const [sort, setSort] = useState<SortMode>("oldest")
 
-  const filtered = useMemo(
-    () =>
-      nonFollowers.filter((nf) =>
-        nf.username.toLowerCase().includes(search.toLowerCase())
-      ),
-    [nonFollowers, search]
-  )
+  const filtered = useMemo(() => {
+    const base = nonFollowers.filter((nf) =>
+      nf.username.toLowerCase().includes(search.toLowerCase())
+    )
+    if (sort === "oldest") return [...base].sort((a, b) => (a.followedSince ?? 0) - (b.followedSince ?? 0))
+    if (sort === "newest") return [...base].sort((a, b) => (b.followedSince ?? 0) - (a.followedSince ?? 0))
+    return [...base].sort((a, b) => a.username.localeCompare(b.username))
+  }, [nonFollowers, search, sort])
 
   const copyAll = async () => {
     const text = nonFollowers.map((nf) => nf.username).join("\n")
@@ -45,8 +51,9 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative flex-1 max-w-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 max-w-xs">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -66,6 +73,17 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-9 text-sm bg-gray-50 border-gray-200 text-gray-800 placeholder:text-gray-400 rounded-xl focus-visible:ring-pink-400"
           />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortMode)}
+            className="h-9 text-xs font-medium px-3 pr-7 rounded-xl border border-gray-200 bg-gray-50 text-gray-600 cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-pink-400"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
+          >
+            <option value="oldest">Mais antigos primeiro</option>
+            <option value="newest">Mais recentes primeiro</option>
+            <option value="alpha">Alfabético</option>
+          </select>
         </div>
         <div className="flex items-center gap-3">
           {search && (
@@ -125,8 +143,15 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
                       <span className="font-medium text-[13px] text-gray-800">{nf.username}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-400 text-[12px] hidden sm:table-cell">
-                    {nf.followedSince ? formatDate(nf.followedSince) : "—"}
+                  <TableCell className="hidden sm:table-cell">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-400 text-[12px]">
+                        {nf.followedSince ? formatDate(nf.followedSince) : "—"}
+                      </span>
+                      {nf.followedSince && nf.followedSince < TWO_YEARS_AGO && (
+                        <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600">antigo</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <a

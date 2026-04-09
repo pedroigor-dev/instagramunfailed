@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
 
-const HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
-const HF_URL = `https://router.huggingface.co/hf-inference/models/${HF_MODEL}/v1/chat/completions`
+const HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+const HF_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}/v1/chat/completions`
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.HUGGINGFACE_API_KEY

@@ -73,8 +73,10 @@ export function analyze(
 ): AnalysisResult {
   const nonFollowers: AnalysisResult["nonFollowers"] = []
 
+  const deletedPattern = /^__deleted__/i
+
   for (const [username, timestamp] of following) {
-    if (!followers.has(username)) {
+    if (!followers.has(username) && !deletedPattern.test(username)) {
       nonFollowers.push({ username, followedSince: timestamp })
     }
   }
