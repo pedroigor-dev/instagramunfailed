@@ -8,20 +8,22 @@ function extractUsername(entry: InstagramEntry): { username: string; timestamp: 
     }
   }
 
+  const fallbackTs = entry.string_list_data?.[0]?.timestamp ?? entry.timestamp ?? 0
+
   if (entry.title) {
     const t = entry.title.trim()
-    if (t) return { username: t.toLowerCase(), timestamp: entry.timestamp ?? 0 }
+    if (t) return { username: t.toLowerCase(), timestamp: fallbackTs }
   }
 
   if (entry.value) {
     const v = entry.value.trim()
-    if (v) return { username: v.toLowerCase(), timestamp: entry.timestamp ?? 0 }
+    if (v) return { username: v.toLowerCase(), timestamp: fallbackTs }
   }
 
   const href = entry.href ?? entry.string_list_data?.[0]?.href
   if (href) {
     const match = href.match(/instagram\.com\/([^/?#]+)/)
-    if (match?.[1]) return { username: match[1].toLowerCase(), timestamp: entry.timestamp ?? 0 }
+    if (match?.[1]) return { username: match[1].toLowerCase(), timestamp: fallbackTs }
   }
 
   return null
