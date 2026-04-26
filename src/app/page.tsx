@@ -6,7 +6,7 @@ export default function Home() {
     <main className="relative min-h-screen bg-white overflow-hidden px-4 py-14 sm:px-6 lg:px-8">
       <ParallaxBackground />
 
-      <div className="relative z-10 mx-auto max-w-2xl">
+      <div className="relative z-10 mx-auto max-w-5xl lg:max-w-6xl">
         <div className="mb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-black/[0.07] bg-white/80 backdrop-blur-sm px-4 py-1.5 text-xs font-medium text-gray-500 mb-8 shadow-sm">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />

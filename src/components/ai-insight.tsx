@@ -1,4 +1,4 @@
-"use client"
+import { Sparkles } from "lucide-react"
 
 import { useCallback, useState } from "react"
 import type { AnalysisResult } from "@/lib/types"
@@ -67,17 +67,17 @@ export function AiInsight({
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm flex-shrink-0 shadow-sm"
             style={{ background: "linear-gradient(135deg, #833ab4, #e1306c, #f77737)" }}
           >
-            ✨
+            <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <p className="font-semibold text-gray-800 text-sm">Análise com IA</p>
+            <p className="font-semibold text-gray-800 text-sm">Bate Papo com o Llama</p>
             <p className="text-[11px] text-gray-400">Llama 3.1 8B · HuggingFace</p>
           </div>
         </div>
         <button
           onClick={fetchInsight}
           disabled={loading}
-          className="text-[12px] font-semibold px-4 py-2 rounded-xl text-white shadow-sm transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 active:scale-95"
+          className="text-[13px] font-semibold px-5 py-2 rounded-xl text-white shadow-sm transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-90 active:scale-95"
           style={{ background: "linear-gradient(135deg, #833ab4, #e1306c, #f77737)" }}
         >
           {loading ? (
