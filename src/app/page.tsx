@@ -47,6 +47,19 @@ export default function Home() {
             Descubra quem não te segue de volta. Faça upload dos arquivos exportados e veja a lista
             em segundos.
           </p>
+
+          <div className="mt-6">
+            <a
+              href="https://accountscenter.instagram.com/info_and_permissions/dyi/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-2xl text-white font-semibold shadow-md"
+              style={{ background: "linear-gradient(135deg, #833ab4 0%, #c13584 40%, #e1306c 70%, #f77737 100%)" }}
+              aria-label="Exportar dados do Instagram"
+            >
+              Leve-me para exportar meus dados
+            </a>
+          </div>
         </div>
 
         <div className="glass rounded-3xl p-6 sm:p-8">
