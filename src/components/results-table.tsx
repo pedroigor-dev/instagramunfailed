@@ -31,7 +31,7 @@ const TWO_YEARS_AGO = Date.now() / 1000 - 2 * 365 * 24 * 3600
 export function ResultsTable({ nonFollowers }: ResultsTableProps) {
   const [search, setSearch] = useState("")
   const [copied, setCopied] = useState(false)
-  const [sort, setSort] = useState<SortMode>("oldest")
+  const [sort, setSort] = useState<SortMode>("newest")
 
   const filtered = useMemo(() => {
     const base = nonFollowers.filter((nf) =>
@@ -100,8 +100,8 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
             className="h-9 text-xs font-medium px-3 pr-7 rounded-xl border border-gray-200 bg-gray-50 text-gray-600 cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-pink-400"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
           >
-            <option value="oldest">Mais antigos primeiro</option>
             <option value="newest">Mais recentes primeiro</option>
+            <option value="oldest">Mais antigos primeiro</option>
             <option value="alpha">Alfabético</option>
           </select>
         </div>
