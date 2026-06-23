@@ -44,7 +44,11 @@ export function AiInsight({
         throw new Error(body.error ?? "Erro desconhecido.")
       }
 
-      const reader = res.body!.getReader()
+      if (!res.body) {
+        throw new Error("A resposta da IA veio vazia.")
+      }
+
+      const reader = res.body.getReader()
       const decoder = new TextDecoder()
 
       while (true) {
@@ -71,7 +75,7 @@ export function AiInsight({
           </div>
           <div>
             <p className="font-semibold text-gray-800 text-sm">Bate Papo com o Llama</p>
-            <p className="text-[11px] text-gray-400">Llama 3.1 8B · HuggingFace</p>
+            <p className="text-[11px] text-gray-400">Opcional: envia os números e até 8 usernames para a Hugging Face</p>
           </div>
         </div>
         <button
@@ -104,7 +108,7 @@ export function AiInsight({
       {!insight && !error && !loading && (
         <p className="mt-4 text-gray-400 text-[12px]">
           Clique em &quot;Gerar insight&quot; para receber uma análise personalizada
-          dos seus dados pelo Llama 3.1 8B.
+          pelo Llama 3.1 8B. Sem clicar, seus arquivos continuam só no navegador.
         </p>
       )}
     </div>

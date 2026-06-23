@@ -126,4 +126,222 @@
     will-change: transform;
     transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
+
+  .cta-arrow {
+    position: absolute;
+    z-index: 5;
+    width: 8.5rem;
+    color: #111827;
+    filter: drop-shadow(0 10px 14px rgb(17 24 39 / 0.16));
+    opacity: 0.92;
+    pointer-events: none;
+    transform-origin: center;
+  }
+
+  .cta-arrow-top {
+    left: 50%;
+    top: -5.9rem;
+    animation: cta-arrow-top 1.35s ease-in-out infinite;
+  }
+
+  .cta-arrow-left {
+    left: -9.1rem;
+    top: -0.6rem;
+    animation: cta-arrow-left 1.35s ease-in-out infinite;
+  }
+
+  .cta-arrow-right {
+    right: -9.1rem;
+    top: -0.6rem;
+    animation: cta-arrow-right 1.35s ease-in-out infinite;
+  }
+
+  @keyframes cta-arrow-top {
+    0%,
+    100% {
+      transform: translateX(-50%) translateY(-0.25rem) rotate(88deg) scaleX(0.92);
+    }
+    50% {
+      transform: translateX(-50%) translateY(0.2rem) rotate(88deg) scaleX(0.92);
+    }
+  }
+
+  @keyframes cta-arrow-left {
+    0%,
+    100% {
+      transform: translateX(-0.2rem) rotate(8deg);
+    }
+    50% {
+      transform: translateX(0.3rem) rotate(8deg);
+    }
+  }
+
+  @keyframes cta-arrow-right {
+    0%,
+    100% {
+      transform: translateX(0.2rem) rotate(172deg);
+    }
+    50% {
+      transform: translateX(-0.3rem) rotate(172deg);
+    }
+  }
+
+  .tutorial-shot {
+    position: relative;
+    min-height: 26rem;
+    overflow: hidden;
+    border-radius: 1.6rem;
+    border: 1px solid rgb(229 231 235);
+    background: white;
+    padding: 4.75rem 1.5rem 1.5rem;
+    box-shadow: 0 18px 45px rgb(17 24 39 / 0.10);
+  }
+
+  .tutorial-topline {
+    position: absolute;
+    inset: 0 0 auto;
+    display: flex;
+    height: 3.75rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(17 24 39 / 0.12);
+    padding: 0 1.25rem;
+    color: rgb(17 24 39);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .tutorial-shot h4 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: rgb(17 24 39);
+  }
+
+  .tutorial-shot p {
+    color: rgb(107 114 128);
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .tutorial-blue {
+    display: flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: #0b74de;
+    color: white;
+    font-weight: 800;
+  }
+
+  .tutorial-list {
+    overflow: hidden;
+    border: 1px solid rgb(229 231 235);
+    border-radius: 1.15rem;
+    background: white;
+  }
+
+  .tutorial-list > div {
+    display: flex;
+    min-height: 3.3rem;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgb(229 231 235);
+    padding: 0.65rem 1rem;
+    color: rgb(17 24 39);
+    font-size: 0.98rem;
+    font-weight: 700;
+  }
+
+  .tutorial-list > div:last-child {
+    border-bottom: 0;
+  }
+
+  .tutorial-list span,
+  .tutorial-profile {
+    display: block;
+    color: rgb(107 114 128);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .tutorial-list.compact > div {
+    min-height: 2.75rem;
+  }
+
+  .tutorial-link {
+    position: absolute;
+    right: 1.6rem;
+    top: 7.9rem;
+    color: #0b74de;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .tutorial-file {
+    min-height: 26rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid rgb(229 231 235);
+    background: white;
+    color: rgb(17 24 39);
+    box-shadow: 0 18px 45px rgb(17 24 39 / 0.10);
+  }
+
+  .tutorial-filebar {
+    border-bottom: 1px solid rgb(229 231 235);
+    background: rgb(249 250 251);
+    padding: 0.9rem 1rem;
+    color: rgb(75 85 99);
+    font-size: 0.8rem;
+  }
+
+  .tutorial-file-row {
+    position: relative;
+    border-bottom: 1px solid rgb(243 244 246);
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .tutorial-arrow {
+    position: absolute;
+    z-index: 3;
+    width: 5.6rem;
+    height: 2rem;
+    pointer-events: none;
+  }
+
+  .tutorial-arrow span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4.6rem;
+    height: 0.22rem;
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background: #ef1717;
+  }
+
+  .tutorial-arrow span::before,
+  .tutorial-arrow span::after {
+    content: "";
+    position: absolute;
+    right: -0.08rem;
+    width: 1.15rem;
+    height: 0.22rem;
+    border-radius: 9999px;
+    background: #ef1717;
+    transform-origin: right center;
+  }
+
+  .tutorial-arrow span::before {
+    top: 0;
+    transform: rotate(34deg);
+  }
+
+  .tutorial-arrow span::after {
+    bottom: 0;
+    transform: rotate(-34deg);
+  }
 }

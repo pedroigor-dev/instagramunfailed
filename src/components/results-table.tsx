@@ -45,6 +45,7 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({})
 
   const allSelected = filtered.length > 0 && filtered.every((nf) => !!selectedMap[nf.username])
+  const selectedCount = Object.values(selectedMap).filter(Boolean).length
 
   const toggleSelectAll = () => {
     if (allSelected) {
@@ -122,7 +123,7 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
                 </svg>
                 Copiado!
               </span>
-            ) : "Copiar todos"}
+            ) : selectedCount ? `Copiar ${selectedCount}` : "Copiar todos"}
           </button>
         </div>
       </div>
@@ -155,7 +156,7 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((nf, i) => (
+              filtered.map((nf) => (
                 <TableRow
                   key={nf.username}
                   className="border-gray-100 hover:bg-[#fdf4f7]/60 transition-colors"

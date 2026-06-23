@@ -1,25 +1,51 @@
-import { NextRequest } from "next/server"
+import type { NextRequest } from "next/server"
 
 const HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras"
 const HF_URL = "https://router.huggingface.co/v1/chat/completions"
 
+function jsonError(error: string, status: number) {
+  return Response.json({ error }, { status })
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+}
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.HUGGINGFACE_API_KEY
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: "HUGGINGFACE_API_KEY não configurada." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    })
+    return jsonError("HUGGINGFACE_API_KEY não configurada.", 500)
   }
 
-  const { followersCount, followingCount, nonFollowersCount, sampleUsernames } =
-    await request.json()
+  let payload: unknown
+  try {
+    payload = await request.json()
+  } catch {
+    return jsonError("JSON inválido.", 400)
+  }
+
+  const body = payload as Record<string, unknown>
+  const { followersCount, followingCount, nonFollowersCount } = body
+
+  if (
+    !isFiniteNumber(followersCount) ||
+    !isFiniteNumber(followingCount) ||
+    !isFiniteNumber(nonFollowersCount)
+  ) {
+    return jsonError("Dados de análise inválidos.", 400)
+  }
+
+  const sampleUsernames = Array.isArray(body.sampleUsernames)
+    ? body.sampleUsernames
+        .filter((username): username is string => typeof username === "string")
+        .slice(0, 8)
+    : []
 
   const percentage = followingCount > 0
     ? ((nonFollowersCount / followingCount) * 100).toFixed(1)
     : "0"
 
-  const sampleList = (sampleUsernames as string[]).slice(0, 8).join(", ")
+  const sampleList = sampleUsernames.join(", ")
 
   const prompt = `Você é um analista de redes sociais objetivo e direto. Analise os dados abaixo de um perfil do Instagram e escreva um diagnóstico em 2-3 frases em português do Brasil.
 Regras: fale na terceira pessoa sobre o dono do perfil ("esse perfil", "você segue", "vale considerar"), seja honesto e prático, sem drama. Não use primeira pessoa, não invente histórias.
@@ -48,30 +74,44 @@ Diagnóstico:`
 
   if (!hfResponse.ok) {
     const err = await hfResponse.text()
-    return new Response(JSON.stringify({ error: `Erro HuggingFace: ${err}` }), {
-      status: hfResponse.status,
-      headers: { "Content-Type": "application/json" },
-    })
+    return jsonError(`Erro HuggingFace: ${err}`, hfResponse.status)
   }
+
+  if (!hfResponse.body) {
+    return jsonError("A Hugging Face retornou uma resposta vazia.", 502)
+  }
+  const hfBody = hfResponse.body
 
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
 
   const stream = new ReadableStream({
     async start(controller) {
-      const reader = hfResponse.body!.getReader()
+      const reader = hfBody.getReader()
+      let buffer = ""
+      let closed = false
+
+      const close = () => {
+        if (!closed) {
+          closed = true
+          controller.close()
+        }
+      }
+
       try {
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
 
-          const chunk = decoder.decode(value, { stream: true })
-          const lines = chunk.split("\n").filter((l) => l.startsWith("data: "))
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split("\n")
+          buffer = lines.pop() ?? ""
 
           for (const line of lines) {
-            const data = line.slice(6)
+            if (!line.startsWith("data: ")) continue
+            const data = line.slice(6).trim()
             if (data === "[DONE]") {
-              controller.close()
+              close()
               return
             }
             try {
@@ -85,9 +125,10 @@ Diagnóstico:`
             }
           }
         }
+        close()
       } finally {
         reader.releaseLock()
-        controller.close()
+        close()
       }
     },
   })
@@ -95,7 +136,7 @@ Diagnóstico:`
   return new Response(stream, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Transfer-Encoding": "chunked",
+      "X-Content-Type-Options": "nosniff",
     },
   })
 }

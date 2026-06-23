@@ -1,9 +1,17 @@
 import type { AnalysisResult, InstagramEntry } from "./types"
 
+function normalizeUsername(value: string) {
+  return value
+    .trim()
+    .replace(/^@+/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase()
+}
+
 function extractUsername(entry: InstagramEntry): { username: string; timestamp: number } | null {
   if (entry.string_list_data?.length) {
     for (const item of entry.string_list_data) {
-      const raw = item.value ?? ""
+      const raw = normalizeUsername(item.value ?? "")
       if (raw) return { username: raw.toLowerCase(), timestamp: item.timestamp ?? 0 }
     }
   }
@@ -11,19 +19,19 @@ function extractUsername(entry: InstagramEntry): { username: string; timestamp: 
   const fallbackTs = entry.string_list_data?.[0]?.timestamp ?? entry.timestamp ?? 0
 
   if (entry.title) {
-    const t = entry.title.trim()
-    if (t) return { username: t.toLowerCase(), timestamp: fallbackTs }
+    const t = normalizeUsername(entry.title)
+    if (t) return { username: t, timestamp: fallbackTs }
   }
 
   if (entry.value) {
-    const v = entry.value.trim()
-    if (v) return { username: v.toLowerCase(), timestamp: fallbackTs }
+    const v = normalizeUsername(entry.value)
+    if (v) return { username: v, timestamp: fallbackTs }
   }
 
   const href = entry.href ?? entry.string_list_data?.[0]?.href
   if (href) {
     const match = href.match(/instagram\.com\/([^/?#]+)/)
-    if (match?.[1]) return { username: match[1].toLowerCase(), timestamp: fallbackTs }
+    if (match?.[1]) return { username: normalizeUsername(match[1]), timestamp: fallbackTs }
   }
 
   return null
