@@ -1,16 +1,64 @@
 import { InstagramAnalyzer } from "@/components/instagram-analyzer"
+import { ComplianceInfo } from "@/components/compliance-info"
+import { CreatorCallout } from "@/components/creator-callout"
+import { ExportTutorial } from "@/components/export-tutorial"
+import { IntroLoader } from "@/components/intro-loader"
 import { ParallaxBackground } from "@/components/parallax-background"
+
+function BrushArrow({ className }: { className: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 160 100"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14 66C39 39 72 24 127 26"
+        stroke="currentColor"
+        strokeWidth="13"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M105 8C119 13 133 21 146 34"
+        stroke="currentColor"
+        strokeWidth="13"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M110 52C123 43 135 36 146 34"
+        stroke="currentColor"
+        strokeWidth="13"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 70C49 48 81 34 122 31"
+        stroke="white"
+        strokeOpacity="0.35"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
 
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-white overflow-hidden px-4 py-14 sm:px-6 lg:px-8">
+      <IntroLoader />
       <ParallaxBackground />
+      <ComplianceInfo />
+      <CreatorCallout />
 
-      <div className="relative z-10 mx-auto max-w-2xl">
+      <div className="relative z-10 mx-auto max-w-5xl lg:max-w-6xl">
         <div className="mb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-black/[0.07] bg-white/80 backdrop-blur-sm px-4 py-1.5 text-xs font-medium text-gray-500 mb-8 shadow-sm">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Seus dados ficam 100% no seu navegador
+            A análise principal roda 100% no seu navegador
           </div>
 
           <div className="flex items-center justify-center gap-3 mb-3">
@@ -44,9 +92,26 @@ export default function Home() {
           </h1>
 
           <p className="mt-4 text-[15px] text-gray-400 font-normal max-w-sm mx-auto leading-relaxed">
-            Descubra quem não te segue de volta. Faça upload dos arquivos exportados e veja a lista
+            Descubra quem não te segue de volta. Envie o ZIP completo do Instagram e veja a lista
             em segundos.
           </p>
+
+          <div className="relative mt-9 inline-flex items-center justify-center gap-3">
+            <BrushArrow className="cta-arrow cta-arrow-top hidden sm:block" />
+            <BrushArrow className="cta-arrow cta-arrow-left hidden sm:block" />
+            <BrushArrow className="cta-arrow cta-arrow-right hidden sm:block" />
+            <a
+              href="https://accountscenter.instagram.com/info_and_permissions/dyi/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative z-10 inline-flex items-center justify-center px-6 py-3 rounded-2xl text-white font-semibold shadow-md"
+              style={{ background: "linear-gradient(135deg, #833ab4 0%, #c13584 40%, #e1306c 70%, #f77737 100%)" }}
+              aria-label="Exportar dados do Instagram"
+            >
+              Leve-me para exportar meus dados
+            </a>
+            <ExportTutorial />
+          </div>
         </div>
 
         <div className="glass rounded-3xl p-6 sm:p-8">
@@ -68,9 +133,6 @@ export default function Home() {
           <InstagramAnalyzer />
         </div>
 
-        <p className="text-center text-[11px] text-gray-300 mt-7 font-medium tracking-wide">
-          NENHUM DADO É ENVIADO PARA SERVIDORES · PROCESSAMENTO LOCAL
-        </p>
       </div>
     </main>
   )

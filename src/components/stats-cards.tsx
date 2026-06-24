@@ -56,15 +56,15 @@ export function StatsCards(data: StatsCardsProps) {
       {stats(data).map((stat) => (
         <div
           key={stat.label}
-          className="glass-card rounded-2xl px-5 py-4"
+          className="glass-card rounded-2xl px-6 py-5 flex flex-col items-start"
         >
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center mb-3"
+            className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
             style={{ background: stat.iconBg }}
           >
             {stat.icon}
           </div>
-          <p className="text-3xl font-bold tabular-nums text-gray-900">
+          <p className="text-4xl font-extrabold tabular-nums text-gray-900">
             {stat.value.toLocaleString("pt-BR")}
           </p>
           <p className="text-[13px] font-semibold text-gray-700 mt-1">{stat.label}</p>

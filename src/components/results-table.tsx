@@ -31,7 +31,7 @@ const TWO_YEARS_AGO = Date.now() / 1000 - 2 * 365 * 24 * 3600
 export function ResultsTable({ nonFollowers }: ResultsTableProps) {
   const [search, setSearch] = useState("")
   const [copied, setCopied] = useState(false)
-  const [sort, setSort] = useState<SortMode>("oldest")
+  const [sort, setSort] = useState<SortMode>("newest")
 
   const filtered = useMemo(() => {
     const base = nonFollowers.filter((nf) =>
@@ -42,8 +42,29 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
     return [...base].sort((a, b) => a.username.localeCompare(b.username))
   }, [nonFollowers, search, sort])
 
+  const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({})
+
+  const allSelected = filtered.length > 0 && filtered.every((nf) => !!selectedMap[nf.username])
+  const selectedCount = Object.values(selectedMap).filter(Boolean).length
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedMap({})
+    } else {
+      const map: Record<string, boolean> = {}
+      filtered.forEach((nf) => { map[nf.username] = true })
+      setSelectedMap(map)
+    }
+  }
+
+  const toggleSelect = (username: string) => {
+    setSelectedMap((prev) => ({ ...prev, [username]: !prev[username] }))
+  }
+
   const copyAll = async () => {
-    const text = nonFollowers.map((nf) => nf.username).join("\n")
+    const selected = Object.keys(selectedMap).filter((k) => selectedMap[k])
+    const list = selected.length ? selected : nonFollowers.map((nf) => nf.username)
+    const text = list.join("\n")
     await navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -80,8 +101,8 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
             className="h-9 text-xs font-medium px-3 pr-7 rounded-xl border border-gray-200 bg-gray-50 text-gray-600 cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-pink-400"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
           >
-            <option value="oldest">Mais antigos primeiro</option>
             <option value="newest">Mais recentes primeiro</option>
+            <option value="oldest">Mais antigos primeiro</option>
             <option value="alpha">Alfabético</option>
           </select>
         </div>
@@ -102,7 +123,7 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
                 </svg>
                 Copiado!
               </span>
-            ) : "Copiar todos"}
+            ) : selectedCount ? `Copiar ${selectedCount}` : "Copiar todos"}
           </button>
         </div>
       </div>
@@ -111,7 +132,15 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
         <Table>
           <TableHeader>
             <TableRow className="border-gray-100 bg-gray-50/80 hover:bg-gray-50/80">
-              <TableHead className="text-gray-400 font-semibold text-[11px] uppercase tracking-wider w-12">#</TableHead>
+              <TableHead className="text-gray-400 font-semibold text-[11px] uppercase tracking-wider w-12">
+                <input
+                  type="checkbox"
+                  aria-label="Selecionar todos"
+                  checked={allSelected}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-gray-200"
+                />
+              </TableHead>
               <TableHead className="text-gray-400 font-semibold text-[11px] uppercase tracking-wider">Username</TableHead>
               <TableHead className="text-gray-400 font-semibold text-[11px] uppercase tracking-wider hidden sm:table-cell">
                 Seguindo desde
@@ -127,28 +156,39 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((nf, i) => (
+              filtered.map((nf) => (
                 <TableRow
                   key={nf.username}
                   className="border-gray-100 hover:bg-[#fdf4f7]/60 transition-colors"
                 >
                   <TableCell className="text-gray-300 text-xs tabular-nums">
-                    {i + 1}
+                    <input
+                      type="checkbox"
+                      aria-label={`Selecionar ${nf.username}`}
+                      checked={!!selectedMap[nf.username]}
+                      onChange={() => toggleSelect(nf.username)}
+                      className="w-5 h-5 rounded border-gray-200"
+                    />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#833ab4] via-[#e1306c] to-[#fcaf45] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                    <a
+                      href={`https://instagram.com/${nf.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#833ab4] via-[#e1306c] to-[#fcaf45] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                         {nf.username[0].toUpperCase()}
                       </div>
-                      <span className="font-medium text-[13px] text-gray-800">{nf.username}</span>
-                    </div>
+                      <span className="font-semibold text-[15px] text-gray-900">{nf.username}</span>
+                    </a>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
                     <div className="flex items-center gap-1.5">
                       <span className="text-gray-400 text-[12px]">
                         {nf.followedSince ? formatDate(nf.followedSince) : "—"}
                       </span>
-                      {nf.followedSince && nf.followedSince < TWO_YEARS_AGO && (
+                      {!!nf.followedSince && nf.followedSince < TWO_YEARS_AGO && (
                         <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600">antigo</span>
                       )}
                     </div>
@@ -158,9 +198,10 @@ export function ResultsTable({ nonFollowers }: ResultsTableProps) {
                       href={`https://instagram.com/${nf.username}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] font-semibold text-[#e1306c] hover:text-[#c13584] transition-colors"
+                      className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[12px] font-semibold text-white shadow-sm"
+                      style={{ background: "linear-gradient(135deg, #833ab4, #e1306c, #f77737)" }}
                     >
-                      Ver →
+                      Ver perfil
                     </a>
                   </TableCell>
                 </TableRow>

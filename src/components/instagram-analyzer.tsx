@@ -1,16 +1,48 @@
 "use client"
 
 import { useCallback, useState } from "react"
+import { strFromU8, unzipSync } from "fflate"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { UploadZone } from "@/components/upload-zone"
 import { StatsCards } from "@/components/stats-cards"
 import { ResultsTable } from "@/components/results-table"
-import { AiInsight } from "@/components/ai-insight"
 import { parseFollowersMerged, parseFollowing, analyze } from "@/lib/instagram"
 import type { AnalysisResult } from "@/lib/types"
 
+type InstagramPayload = {
+  followersDataArray: unknown[]
+  followingData: unknown
+}
+
+function parseJson(raw: string, source: string): unknown {
+  try {
+    return JSON.parse(raw)
+  } catch {
+    throw new Error(`"${source}" não é um JSON válido.`)
+  }
+}
+
+function isFollowersPath(path: string) {
+  return /(^|\/)followers(?:_\d+)?\.json$/i.test(path)
+}
+
+function isFollowingPath(path: string) {
+  return /(^|\/)following\.json$/i.test(path)
+}
+
+function isNeededInstagramPath(path: string) {
+  const normalizedPath = path.replace(/\\/g, "/")
+  return isFollowersPath(normalizedPath) || isFollowingPath(normalizedPath)
+}
+
+function formatFileSize(size: number) {
+  if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`
+  return `${(size / 1024 / 1024).toFixed(size < 10 * 1024 * 1024 ? 1 : 0)} MB`
+}
+
 export function InstagramAnalyzer() {
+  const [archiveFiles, setArchiveFiles] = useState<File[]>([])
   const [followersFiles, setFollowersFiles] = useState<File[]>([])
   const [followingFiles, setFollowingFiles] = useState<File[]>([])
   const [result, setResult] = useState<AnalysisResult | null>(null)
@@ -22,27 +54,57 @@ export function InstagramAnalyzer() {
       const reader = new FileReader()
       reader.onload = (e) => {
         try {
-          resolve(JSON.parse(e.target?.result as string))
-        } catch {
-          reject(new Error(`"${file.name}" não é um JSON válido.`))
+          resolve(parseJson(e.target?.result as string, file.name))
+        } catch (err) {
+          reject(err)
         }
       }
       reader.onerror = () => reject(new Error(`Erro ao ler "${file.name}".`))
       reader.readAsText(file)
     })
 
+  const readArchive = async (file: File): Promise<InstagramPayload> => {
+    const buffer = await file.arrayBuffer()
+    const entries = unzipSync(new Uint8Array(buffer), {
+      filter: (entry) => isNeededInstagramPath(entry.name),
+    })
+    const followersDataArray: unknown[] = []
+    let followingData: unknown | null = null
+
+    for (const [path, bytes] of Object.entries(entries)) {
+      const normalizedPath = path.replace(/\\/g, "/")
+      if (!normalizedPath.toLowerCase().endsWith(".json")) continue
+
+      if (isFollowersPath(normalizedPath)) {
+        followersDataArray.push(parseJson(strFromU8(bytes), normalizedPath))
+      }
+
+      if (isFollowingPath(normalizedPath)) {
+        followingData = parseJson(strFromU8(bytes), normalizedPath)
+      }
+    }
+
+    if (!followersDataArray.length || !followingData) {
+      throw new Error("Não encontrei followers_*.json e following.json dentro do ZIP. Verifique se é o export completo do Instagram em formato JSON.")
+    }
+
+    return { followersDataArray, followingData }
+  }
+
   const handleAnalyze = useCallback(async () => {
-    if (!followersFiles.length || !followingFiles.length) return
+    if (!archiveFiles.length && (!followersFiles.length || !followingFiles.length)) return
 
     setLoading(true)
     setError(null)
     setResult(null)
 
     try {
-      const [followersDataArray, followingData] = await Promise.all([
-        Promise.all(followersFiles.map(readJson)),
-        readJson(followingFiles[0]),
-      ])
+      const { followersDataArray, followingData } = archiveFiles.length
+        ? await readArchive(archiveFiles[0])
+        : {
+            followersDataArray: await Promise.all(followersFiles.map(readJson)),
+            followingData: await readJson(followingFiles[0]),
+          }
 
       const followers = parseFollowersMerged(followersDataArray)
       const following = parseFollowing(followingData)
@@ -56,19 +118,44 @@ export function InstagramAnalyzer() {
     } finally {
       setLoading(false)
     }
-  }, [followersFiles, followingFiles])
+  }, [archiveFiles, followersFiles, followingFiles])
 
   const handleReset = () => {
+    setArchiveFiles([])
     setFollowersFiles([])
     setFollowingFiles([])
     setResult(null)
     setError(null)
   }
 
-  const canAnalyze = followersFiles.length > 0 && followingFiles.length > 0 && !loading
+  const canAnalyze = (archiveFiles.length > 0 || (followersFiles.length > 0 && followingFiles.length > 0)) && !loading
 
   return (
     <div className="space-y-5">
+      <UploadZone
+        label="ZIP do Instagram"
+        hint="Pode enviar o ZIP completo, mesmo se exportou tudo"
+        files={archiveFiles}
+        onFiles={setArchiveFiles}
+        accept=".zip"
+      />
+
+      <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-left">
+        <p className="text-[12px] font-semibold text-emerald-700">
+          Caminho mais fácil: envie o ZIP aqui. O app procura sozinho só followers e following.
+        </p>
+        <p className="mt-1 text-[11px] leading-relaxed text-emerald-600/80">
+          Se a pessoa exportou todos os dados sem querer, tudo bem. Pode demorar um pouco mais, mas nada é enviado para servidor.
+          {archiveFiles[0] ? ` Arquivo selecionado: ${formatFileSize(archiveFiles[0].size)}.` : ""}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-gray-300">
+        <span className="h-px flex-1 bg-gray-100" />
+        ou envie manualmente
+        <span className="h-px flex-1 bg-gray-100" />
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <UploadZone
           label="followers_1.json"
@@ -87,7 +174,7 @@ export function InstagramAnalyzer() {
 
       {followersFiles.length > 0 && (
         <p className="text-[11px] text-gray-400 -mt-2 px-1">
-          💡 Instagram divide seguidores em vários arquivos (followers_1, followers_2…). Adicione todos para resultado completo.
+          Dica: o Instagram pode dividir seguidores em vários arquivos (followers_1, followers_2...). Adicione todos para resultado completo.
         </p>
       )}
 
@@ -144,13 +231,6 @@ export function InstagramAnalyzer() {
             followersCount={result.followersCount}
             followingCount={result.followingCount}
             nonFollowersCount={result.nonFollowersCount}
-          />
-
-          <AiInsight
-            followersCount={result.followersCount}
-            followingCount={result.followingCount}
-            nonFollowersCount={result.nonFollowersCount}
-            nonFollowers={result.nonFollowers}
           />
 
           <div className="space-y-3">

@@ -126,4 +126,549 @@
     will-change: transform;
     transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
+
+  .intro-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 42%, rgb(255 255 255 / 0.94), rgb(255 255 255 / 0.72) 24%, rgb(255 255 255 / 0.14) 46%, transparent 64%),
+      linear-gradient(135deg, #833ab4 0%, #c13584 30%, #e1306c 54%, #fd1d1d 72%, #f77737 100%);
+    perspective: 900px;
+    animation: intro-loader-fade 0.65s ease 3.12s forwards;
+  }
+
+  .intro-loader__aura {
+    position: absolute;
+    width: min(82vw, 46rem);
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background:
+      radial-gradient(circle, rgb(255 255 255 / 0.82) 0 12%, rgb(255 255 255 / 0.25) 26%, transparent 64%),
+      conic-gradient(from 110deg, #833ab4, #e1306c, #fd1d1d, #f77737, #fcaf45, #833ab4);
+    filter: blur(34px) saturate(150%);
+    opacity: 0.78;
+    animation: intro-aura 3.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .intro-loader__grain {
+    position: absolute;
+    inset: -20%;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at center, black, transparent 68%);
+    opacity: 0.24;
+    transform: rotate(-8deg);
+    animation: intro-grain 2.8s ease-in-out infinite alternate;
+  }
+
+  .intro-loader__scene {
+    position: relative;
+    display: grid;
+    place-items: center;
+    transform-style: preserve-3d;
+  }
+
+  .intro-loader__rings {
+    position: absolute;
+    width: 18rem;
+    aspect-ratio: 1;
+    transform-style: preserve-3d;
+  }
+
+  .intro-loader__rings span {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgb(255 255 255 / 0.55);
+    border-radius: 9999px;
+    box-shadow: inset 0 0 34px rgb(255 255 255 / 0.16), 0 0 34px rgb(255 255 255 / 0.20);
+  }
+
+  .intro-loader__rings span:nth-child(1) {
+    animation: intro-ring-one 2.75s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .intro-loader__rings span:nth-child(2) {
+    transform: rotateX(64deg) rotateZ(18deg);
+    animation: intro-ring-two 2.75s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .intro-loader__rings span:nth-child(3) {
+    transform: rotateY(66deg) rotateZ(-24deg);
+    animation: intro-ring-three 2.75s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .intro-loader__icon-wrap {
+    position: relative;
+    transform-style: preserve-3d;
+    animation: intro-icon-wrap 3.34s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+
+  .intro-loader__icon {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    width: 7.2rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 2.1rem;
+    background: linear-gradient(135deg, #833ab4 0%, #c13584 34%, #e1306c 56%, #fd1d1d 75%, #f77737 100%);
+    box-shadow:
+      0 22px 70px rgb(131 58 180 / 0.36),
+      0 18px 42px rgb(225 48 108 / 0.30),
+      inset 0 1px 0 rgb(255 255 255 / 0.34),
+      inset 0 -16px 36px rgb(0 0 0 / 0.12);
+    transform-style: preserve-3d;
+  }
+
+  .intro-loader__icon::before {
+    content: "";
+    position: absolute;
+    inset: 0.55rem;
+    border-radius: 1.65rem;
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.32), transparent 48%);
+    opacity: 0.85;
+  }
+
+  .intro-loader__shadow {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 7rem;
+    height: 1.2rem;
+    border-radius: 9999px;
+    background: rgb(17 24 39 / 0.35);
+    filter: blur(16px);
+    transform: translateX(-50%) translateY(1.1rem) rotateX(74deg);
+    animation: intro-shadow 3.34s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+
+  .intro-loader__copy {
+    position: absolute;
+    top: calc(100% + 4.7rem);
+    width: max-content;
+    text-align: center;
+    color: white;
+    text-shadow: 0 8px 24px rgb(0 0 0 / 0.16);
+    animation: intro-copy 2.8s ease both;
+  }
+
+  .intro-loader__copy p {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .intro-loader__copy span {
+    display: block;
+    margin-top: 0.4rem;
+    color: rgb(255 255 255 / 0.78);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .intro-loader__progress {
+    position: absolute;
+    top: calc(100% + 8.3rem);
+    width: min(16rem, 62vw);
+    height: 0.22rem;
+    overflow: hidden;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.26);
+  }
+
+  .intro-loader__progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: white;
+    transform-origin: left;
+    animation: intro-progress 2.72s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+
+  .intro-loader.is-exiting .intro-loader__copy,
+  .intro-loader.is-exiting .intro-loader__progress,
+  .intro-loader.is-exiting .intro-loader__rings {
+    animation-play-state: paused;
+    opacity: 0;
+    transition: opacity 0.24s ease;
+  }
+
+  @keyframes intro-loader-fade {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes intro-aura {
+    0% {
+      transform: scale(0.62) rotate(-16deg);
+      opacity: 0;
+    }
+    36% {
+      opacity: 0.78;
+    }
+    100% {
+      transform: scale(1.06) rotate(24deg);
+      opacity: 0.58;
+    }
+  }
+
+  @keyframes intro-grain {
+    to {
+      transform: translate3d(-1rem, 0.6rem, 0) rotate(-8deg);
+    }
+  }
+
+  @keyframes intro-ring-one {
+    0% {
+      transform: scale(0.72) rotateZ(0deg);
+      opacity: 0;
+    }
+    24%,
+    70% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: scale(1.22) rotateZ(160deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes intro-ring-two {
+    0% {
+      transform: rotateX(64deg) rotateZ(18deg) scale(0.66);
+      opacity: 0;
+    }
+    24%,
+    74% {
+      opacity: 0.65;
+    }
+    100% {
+      transform: rotateX(64deg) rotateZ(214deg) scale(1.18);
+      opacity: 0;
+    }
+  }
+
+  @keyframes intro-ring-three {
+    0% {
+      transform: rotateY(66deg) rotateZ(-24deg) scale(0.7);
+      opacity: 0;
+    }
+    24%,
+    74% {
+      opacity: 0.65;
+    }
+    100% {
+      transform: rotateY(66deg) rotateZ(-210deg) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes intro-icon-wrap {
+    0% {
+      transform: translate3d(0, 1.4rem, -220px) rotateX(58deg) rotateY(-34deg) rotateZ(-16deg) scale(0.55);
+      opacity: 0;
+    }
+    18% {
+      opacity: 1;
+    }
+    42% {
+      transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+    }
+    68% {
+      transform: translate3d(0, -0.18rem, 34px) rotateX(8deg) rotateY(-12deg) rotateZ(4deg) scale(1.03);
+    }
+    82% {
+      transform: translate3d(0, 0.08rem, 10px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.98);
+    }
+    100% {
+      transform: translate3d(0, 0, 720px) rotateX(-8deg) rotateY(16deg) rotateZ(-3deg) scale(2.7);
+      opacity: 0;
+    }
+  }
+
+  @keyframes intro-shadow {
+    0%,
+    18% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(1.5rem) rotateX(74deg) scale(0.45);
+    }
+    42%,
+    78% {
+      opacity: 0.58;
+      transform: translateX(-50%) translateY(1.1rem) rotateX(74deg) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(2.2rem) rotateX(74deg) scale(2.2);
+    }
+  }
+
+  @keyframes intro-copy {
+    0%,
+    20% {
+      opacity: 0;
+      transform: translateY(0.8rem);
+    }
+    42%,
+    82% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-0.4rem);
+    }
+  }
+
+  @keyframes intro-progress {
+    0% {
+      transform: scaleX(0);
+    }
+    62% {
+      transform: scaleX(0.72);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro-loader,
+    .intro-loader *,
+    .intro-loader *::before,
+    .intro-loader *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  .cta-arrow {
+    position: absolute;
+    z-index: 5;
+    width: 8.5rem;
+    color: #111827;
+    filter: drop-shadow(0 10px 14px rgb(17 24 39 / 0.16));
+    opacity: 0.92;
+    pointer-events: none;
+    transform-origin: center;
+  }
+
+  .cta-arrow-top {
+    left: 50%;
+    top: -5.9rem;
+    animation: cta-arrow-top 1.35s ease-in-out infinite;
+  }
+
+  .cta-arrow-left {
+    left: -9.1rem;
+    top: -0.6rem;
+    animation: cta-arrow-left 1.35s ease-in-out infinite;
+  }
+
+  .cta-arrow-right {
+    right: -9.1rem;
+    top: -0.6rem;
+    animation: cta-arrow-right 1.35s ease-in-out infinite;
+  }
+
+  @keyframes cta-arrow-top {
+    0%,
+    100% {
+      transform: translateX(-50%) translateY(-0.25rem) rotate(88deg) scaleX(0.92);
+    }
+    50% {
+      transform: translateX(-50%) translateY(0.2rem) rotate(88deg) scaleX(0.92);
+    }
+  }
+
+  @keyframes cta-arrow-left {
+    0%,
+    100% {
+      transform: translateX(-0.2rem) rotate(8deg);
+    }
+    50% {
+      transform: translateX(0.3rem) rotate(8deg);
+    }
+  }
+
+  @keyframes cta-arrow-right {
+    0%,
+    100% {
+      transform: translateX(0.2rem) rotate(172deg);
+    }
+    50% {
+      transform: translateX(-0.3rem) rotate(172deg);
+    }
+  }
+
+  .tutorial-shot {
+    position: relative;
+    min-height: 26rem;
+    overflow: hidden;
+    border-radius: 1.6rem;
+    border: 1px solid rgb(229 231 235);
+    background: white;
+    padding: 4.75rem 1.5rem 1.5rem;
+    box-shadow: 0 18px 45px rgb(17 24 39 / 0.10);
+  }
+
+  .tutorial-topline {
+    position: absolute;
+    inset: 0 0 auto;
+    display: flex;
+    height: 3.75rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(17 24 39 / 0.12);
+    padding: 0 1.25rem;
+    color: rgb(17 24 39);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .tutorial-shot h4 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: rgb(17 24 39);
+  }
+
+  .tutorial-shot p {
+    color: rgb(107 114 128);
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .tutorial-blue {
+    display: flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: #0b74de;
+    color: white;
+    font-weight: 800;
+  }
+
+  .tutorial-list {
+    overflow: hidden;
+    border: 1px solid rgb(229 231 235);
+    border-radius: 1.15rem;
+    background: white;
+  }
+
+  .tutorial-list > div {
+    display: flex;
+    min-height: 3.3rem;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgb(229 231 235);
+    padding: 0.65rem 1rem;
+    color: rgb(17 24 39);
+    font-size: 0.98rem;
+    font-weight: 700;
+  }
+
+  .tutorial-list > div:last-child {
+    border-bottom: 0;
+  }
+
+  .tutorial-list span,
+  .tutorial-profile {
+    display: block;
+    color: rgb(107 114 128);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .tutorial-list.compact > div {
+    min-height: 2.75rem;
+  }
+
+  .tutorial-link {
+    position: absolute;
+    right: 1.6rem;
+    top: 7.9rem;
+    color: #0b74de;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .tutorial-file {
+    min-height: 26rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid rgb(229 231 235);
+    background: white;
+    color: rgb(17 24 39);
+    box-shadow: 0 18px 45px rgb(17 24 39 / 0.10);
+  }
+
+  .tutorial-filebar {
+    border-bottom: 1px solid rgb(229 231 235);
+    background: rgb(249 250 251);
+    padding: 0.9rem 1rem;
+    color: rgb(75 85 99);
+    font-size: 0.8rem;
+  }
+
+  .tutorial-file-row {
+    position: relative;
+    border-bottom: 1px solid rgb(243 244 246);
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .tutorial-arrow {
+    position: absolute;
+    z-index: 3;
+    width: 5.6rem;
+    height: 2rem;
+    pointer-events: none;
+  }
+
+  .tutorial-arrow span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4.6rem;
+    height: 0.22rem;
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background: #ef1717;
+  }
+
+  .tutorial-arrow span::before,
+  .tutorial-arrow span::after {
+    content: "";
+    position: absolute;
+    right: -0.08rem;
+    width: 1.15rem;
+    height: 0.22rem;
+    border-radius: 9999px;
+    background: #ef1717;
+    transform-origin: right center;
+  }
+
+  .tutorial-arrow span::before {
+    top: 0;
+    transform: rotate(34deg);
+  }
+
+  .tutorial-arrow span::after {
+    bottom: 0;
+    transform: rotate(-34deg);
+  }
 }
