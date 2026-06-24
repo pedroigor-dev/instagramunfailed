@@ -1,6 +1,8 @@
 import { InstagramAnalyzer } from "@/components/instagram-analyzer"
 import { ComplianceInfo } from "@/components/compliance-info"
+import { CreatorCallout } from "@/components/creator-callout"
 import { ExportTutorial } from "@/components/export-tutorial"
+import { IntroLoader } from "@/components/intro-loader"
 import { ParallaxBackground } from "@/components/parallax-background"
 
 function BrushArrow({ className }: { className: string }) {
@@ -47,8 +49,10 @@ function BrushArrow({ className }: { className: string }) {
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-white overflow-hidden px-4 py-14 sm:px-6 lg:px-8">
+      <IntroLoader />
       <ParallaxBackground />
       <ComplianceInfo />
+      <CreatorCallout />
 
       <div className="relative z-10 mx-auto max-w-5xl lg:max-w-6xl">
         <div className="mb-12 text-center">
