@@ -1,11 +1,13 @@
 import type { AnalysisResult, InstagramEntry } from "./types"
 
 function normalizeUsername(value: string) {
-  return value
+  const username = value
     .trim()
     .replace(/^@+/, "")
     .replace(/\/+$/, "")
     .toLowerCase()
+
+  return /^[a-z0-9._]{1,30}$/.test(username) ? username : ""
 }
 
 function extractUsername(entry: InstagramEntry): { username: string; timestamp: number } | null {
