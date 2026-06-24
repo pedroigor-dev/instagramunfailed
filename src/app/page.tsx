@@ -1,4 +1,5 @@
 import { InstagramAnalyzer } from "@/components/instagram-analyzer"
+import { ComplianceInfo } from "@/components/compliance-info"
 import { ExportTutorial } from "@/components/export-tutorial"
 import { ParallaxBackground } from "@/components/parallax-background"
 
@@ -47,6 +48,7 @@ export default function Home() {
   return (
     <main className="relative min-h-screen bg-white overflow-hidden px-4 py-14 sm:px-6 lg:px-8">
       <ParallaxBackground />
+      <ComplianceInfo />
 
       <div className="relative z-10 mx-auto max-w-5xl lg:max-w-6xl">
         <div className="mb-12 text-center">
@@ -127,9 +129,6 @@ export default function Home() {
           <InstagramAnalyzer />
         </div>
 
-        <p className="text-center text-[11px] text-gray-300 mt-7 font-medium tracking-wide">
-          PROCESSAMENTO LOCAL · IA OPCIONAL ENVIA APENAS RESUMO E ATÉ 8 USERNAMES
-        </p>
       </div>
     </main>
   )

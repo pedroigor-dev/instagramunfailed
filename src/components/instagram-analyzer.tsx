@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator"
 import { UploadZone } from "@/components/upload-zone"
 import { StatsCards } from "@/components/stats-cards"
 import { ResultsTable } from "@/components/results-table"
-import { AiInsight } from "@/components/ai-insight"
 import { parseFollowersMerged, parseFollowing, analyze } from "@/lib/instagram"
 import type { AnalysisResult } from "@/lib/types"
 
@@ -232,13 +231,6 @@ export function InstagramAnalyzer() {
             followersCount={result.followersCount}
             followingCount={result.followingCount}
             nonFollowersCount={result.nonFollowersCount}
-          />
-
-          <AiInsight
-            followersCount={result.followersCount}
-            followingCount={result.followingCount}
-            nonFollowersCount={result.nonFollowersCount}
-            nonFollowers={result.nonFollowers}
           />
 
           <div className="space-y-3">
