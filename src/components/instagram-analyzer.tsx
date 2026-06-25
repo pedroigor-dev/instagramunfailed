@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { UploadZone } from "@/components/upload-zone"
 import { StatsCards } from "@/components/stats-cards"
 import { ResultsTable } from "@/components/results-table"
+import { celebrateFromEvent } from "@/lib/celebrate"
 import { parseFollowersMerged, parseFollowing, analyze } from "@/lib/instagram"
 import type { AnalysisResult } from "@/lib/types"
 
@@ -187,7 +188,10 @@ export function InstagramAnalyzer() {
 
       <div className="flex gap-2.5">
         <button
-          onClick={handleAnalyze}
+          onClick={(event) => {
+            celebrateFromEvent(event, 46)
+            void handleAnalyze()
+          }}
           disabled={!canAnalyze}
           className="flex-1 sm:flex-none h-11 px-8 rounded-2xl text-white text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:scale-100"
           style={{
@@ -257,6 +261,16 @@ export function InstagramAnalyzer() {
               <span className="text-[12px] font-medium text-gray-400 bg-gray-100 rounded-full px-2.5 py-0.5 tabular-nums">
                 {result.nonFollowersCount}
               </span>
+            </div>
+            <div className="rounded-2xl border border-blue-100 bg-blue-50/80 px-4 py-3 text-left">
+              <p className="text-[12px] font-semibold text-blue-700">
+                Alguns perfis podem não existir mais.
+              </p>
+              <p className="mt-1 text-[11px] leading-relaxed text-blue-600/80">
+                Como a lista vem do export do Instagram, ela também pode trazer contas antigas que foram
+                desativadas ou excluídas pelo próprio autor. Se o Instagram mostrar que o usuário não foi
+                localizado, pode ignorar esse perfil.
+              </p>
             </div>
             <ResultsTable nonFollowers={result.nonFollowers} />
           </div>

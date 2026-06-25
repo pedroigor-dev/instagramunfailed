@@ -4,6 +4,7 @@ import { CreatorCallout } from "@/components/creator-callout"
 import { ExportTutorial } from "@/components/export-tutorial"
 import { IntroLoader } from "@/components/intro-loader"
 import { ParallaxBackground } from "@/components/parallax-background"
+import { VideoGuides } from "@/components/video-guides"
 
 function BrushArrow({ className }: { className: string }) {
   return (
@@ -96,21 +97,25 @@ export default function Home() {
             em segundos.
           </p>
 
-          <div className="relative mt-9 inline-flex items-center justify-center gap-3">
-            <BrushArrow className="cta-arrow cta-arrow-top hidden sm:block" />
-            <BrushArrow className="cta-arrow cta-arrow-left hidden sm:block" />
-            <BrushArrow className="cta-arrow cta-arrow-right hidden sm:block" />
-            <a
-              href="https://accountscenter.instagram.com/info_and_permissions/dyi/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative z-10 inline-flex items-center justify-center px-6 py-3 rounded-2xl text-white font-semibold shadow-md"
-              style={{ background: "linear-gradient(135deg, #833ab4 0%, #c13584 40%, #e1306c 70%, #f77737 100%)" }}
-              aria-label="Exportar dados do Instagram"
-            >
-              Leve-me para exportar meus dados
-            </a>
-            <ExportTutorial />
+          <div className="mt-9 flex flex-col items-center">
+            <div className="relative inline-flex items-center justify-center gap-3">
+              <BrushArrow className="cta-arrow cta-arrow-top hidden sm:block" />
+              <BrushArrow className="cta-arrow cta-arrow-left hidden sm:block" />
+              <BrushArrow className="cta-arrow cta-arrow-right hidden sm:block" />
+              <a
+                href="https://accountscenter.instagram.com/info_and_permissions/dyi/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 inline-flex items-center justify-center px-6 py-3 rounded-2xl text-white font-semibold shadow-md"
+                style={{ background: "linear-gradient(135deg, #833ab4 0%, #c13584 40%, #e1306c 70%, #f77737 100%)" }}
+                aria-label="Exportar dados do Instagram"
+              >
+                Leve-me para exportar meus dados
+              </a>
+              <ExportTutorial />
+            </div>
+
+            <VideoGuides />
           </div>
         </div>
 
