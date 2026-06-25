@@ -142,6 +142,7 @@ export function ExportTutorial() {
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState(0)
   const touchStartX = useRef<number | null>(null)
+  const preloadedImages = useRef<HTMLImageElement[]>([])
 
   useEffect(() => {
     if (!open) return
@@ -159,6 +160,18 @@ export function ExportTutorial() {
       document.body.classList.remove("modal-open")
       document.removeEventListener("keydown", onKeyDown)
     }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+
+    preloadedImages.current = steps.map(({ image }) => {
+      const preload = new window.Image()
+      preload.decoding = "async"
+      preload.src = image.src
+      void preload.decode?.().catch(() => undefined)
+      return preload
+    })
   }, [open])
 
   const current = steps[step]
@@ -226,13 +239,16 @@ export function ExportTutorial() {
               <div className="bg-gray-50 p-3 sm:p-5">
                 <div className="relative flex min-h-[190px] items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm sm:min-h-[320px]">
                   <Image
+                    key={current.image.src}
                     src={current.image.src}
                     alt={current.image.alt}
                     width={current.image.width}
                     height={current.image.height}
                     className="max-h-[34vh] w-full object-contain sm:max-h-[68vh]"
-                    priority={step === 0}
+                    loading="eager"
+                    fetchPriority="high"
                     sizes="(min-width: 1024px) 650px, 100vw"
+                    unoptimized
                   />
                 </div>
               </div>
