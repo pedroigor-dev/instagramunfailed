@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Instagram Unfailed — Quem não te segue de volta",
+  title: "IG UNF",
   description: "Descubra quem não te segue de volta no Instagram. Faça upload dos seus dados exportados e veja a lista em segundos. 100% privado, roda no browser.",
 };
 

@@ -104,6 +104,12 @@
     background: var(--ig-gradient);
   }
 
+  .modal-open .creator-callout-button {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.75rem) scale(0.96);
+  }
+
   .glass {
     background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(24px) saturate(180%);

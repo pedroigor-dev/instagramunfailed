@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useCallback, useState } from "react"
 import { strFromU8, unzipSync } from "fflate"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -218,7 +219,22 @@ export function InstagramAnalyzer() {
       {result && result.followersCount < result.followingCount * 0.85 && (
         <Alert className="border-amber-200 bg-amber-50">
           <AlertDescription className="text-amber-700 text-sm leading-relaxed">
-            ⚠️ <strong>Atenção: o export do Instagram está incompleto.</strong> O arquivo exportado contém apenas {result.followersCount} seguidores, mas você está seguindo {result.followingCount} contas. Isso é uma limitação conhecida do Instagram — para contas com muitos seguidores, o export é truncado automaticamente e não há como contornar. Os resultados abaixo refletem apenas os dados disponíveis no arquivo.
+            <p>
+              ⚠️ <strong>Atenção: o export do Instagram está incompleto.</strong> O arquivo exportado contém apenas {result.followersCount} seguidores, mas você está seguindo {result.followingCount} contas. Isso é uma limitação conhecida do Instagram — para contas com muitos seguidores, o export é truncado automaticamente e não há como contornar. Os resultados abaixo refletem apenas os dados disponíveis no arquivo.
+            </p>
+            <p className="mt-3 font-semibold">
+              Antes de tentar de novo, certifique-se de que sua exportação está igual a esta configuração:
+            </p>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-amber-200 bg-white">
+              <Image
+                src="/printcerteza.png"
+                alt="Configuração recomendada: Seguidores e Seguindo, Desde o início e Formato JSON."
+                width={752}
+                height={535}
+                className="h-auto w-full"
+                sizes="(min-width: 640px) 620px, 100vw"
+              />
+            </div>
           </AlertDescription>
         </Alert>
       )}

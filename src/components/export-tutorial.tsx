@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, HelpCircle, X } from "lucide-react"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 type TutorialStep = {
   title: string
@@ -141,9 +141,12 @@ const steps: TutorialStep[] = [
 export function ExportTutorial() {
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState(0)
+  const touchStartX = useRef<number | null>(null)
 
   useEffect(() => {
     if (!open) return
+
+    document.body.classList.add("modal-open")
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false)
@@ -152,10 +155,29 @@ export function ExportTutorial() {
     }
 
     document.addEventListener("keydown", onKeyDown)
-    return () => document.removeEventListener("keydown", onKeyDown)
+    return () => {
+      document.body.classList.remove("modal-open")
+      document.removeEventListener("keydown", onKeyDown)
+    }
   }, [open])
 
   const current = steps[step]
+  const goBack = () => setStep((currentStep) => Math.max(currentStep - 1, 0))
+  const goNext = () => step === steps.length - 1 ? setOpen(false) : setStep((currentStep) => currentStep + 1)
+
+  const handleTouchEnd = (clientX: number) => {
+    if (touchStartX.current === null) return
+
+    const delta = clientX - touchStartX.current
+    touchStartX.current = null
+
+    if (Math.abs(delta) < 48) return
+    if (delta < 0) {
+      setStep((currentStep) => Math.min(currentStep + 1, steps.length - 1))
+    } else {
+      setStep((currentStep) => Math.max(currentStep - 1, 0))
+    }
+  }
 
   return (
     <>
@@ -173,7 +195,7 @@ export function ExportTutorial() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 py-6 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="export-tutorial-title">
-          <div className="relative max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+          <div className="relative flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:h-auto sm:max-h-[92vh]">
             <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-6">
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-[#e1306c]">Tutorial</p>
@@ -194,15 +216,21 @@ export function ExportTutorial() {
               </button>
             </div>
 
-            <div className="grid max-h-[calc(92vh-76px)] overflow-y-auto lg:grid-cols-[minmax(0,1fr)_330px]">
+            <div
+              className="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_330px]"
+              onTouchStart={(event) => {
+                touchStartX.current = event.changedTouches[0]?.clientX ?? null
+              }}
+              onTouchEnd={(event) => handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
+            >
               <div className="bg-gray-50 p-3 sm:p-5">
-                <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="relative flex min-h-[190px] items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm sm:min-h-[320px]">
                   <Image
                     src={current.image.src}
                     alt={current.image.alt}
                     width={current.image.width}
                     height={current.image.height}
-                    className="max-h-[68vh] w-full object-contain"
+                    className="max-h-[34vh] w-full object-contain sm:max-h-[68vh]"
                     priority={step === 0}
                     sizes="(min-width: 1024px) 650px, 100vw"
                   />
@@ -221,38 +249,40 @@ export function ExportTutorial() {
                     Não conseguiu seguir perfeito? Tudo bem: baixe o ZIP que o Instagram entregar e envie aqui no site.
                   </p>
                 </div>
+              </div>
+            </div>
 
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {steps.map((item, index) => (
-                    <button
-                      type="button"
-                      key={item.title}
-                      onClick={() => setStep(index)}
-                      className={`h-2.5 rounded-full transition-all ${index === step ? "w-8 bg-[#e1306c]" : "w-2.5 bg-gray-200 hover:bg-gray-300"}`}
-                      aria-label={`Ir para o passo ${index + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <div className="mt-auto flex gap-3 pt-8">
+            <div className="shrink-0 border-t border-gray-100 bg-white/95 px-5 py-3 backdrop-blur sm:px-6">
+              <div className="flex items-center justify-center gap-2">
+                {steps.map((item, index) => (
                   <button
                     type="button"
-                    onClick={() => setStep((currentStep) => Math.max(currentStep - 1, 0))}
-                    disabled={step === 0}
-                    className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-2xl border border-gray-200 text-sm font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Voltar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => step === steps.length - 1 ? setOpen(false) : setStep((currentStep) => currentStep + 1)}
-                    className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#0b74de] text-sm font-semibold text-white shadow-sm transition hover:bg-[#0867c7]"
-                  >
-                    {step === steps.length - 1 ? "Concluir" : "Próximo"}
-                    {step < steps.length - 1 && <ChevronRight className="h-4 w-4" />}
-                  </button>
-                </div>
+                    key={item.title}
+                    onClick={() => setStep(index)}
+                    className={`h-2.5 rounded-full transition-all ${index === step ? "w-8 bg-[#e1306c]" : "w-2.5 bg-gray-200 hover:bg-gray-300"}`}
+                    aria-label={`Ir para o passo ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-3 flex gap-3">
+                <button
+                  type="button"
+                  onClick={goBack}
+                  disabled={step === 0}
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-2xl border border-gray-200 text-sm font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Voltar
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#0b74de] text-sm font-semibold text-white shadow-sm transition hover:bg-[#0867c7]"
+                >
+                  {step === steps.length - 1 ? "Concluir" : "Próximo"}
+                  {step < steps.length - 1 && <ChevronRight className="h-4 w-4" />}
+                </button>
               </div>
             </div>
           </div>
